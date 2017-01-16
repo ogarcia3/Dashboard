@@ -68,6 +68,7 @@ if($code == 0){
     $queryPareto = "EXEC [sp_dashboard_year_pareto_func_own] '$opt','$year1','$year2','$brand' ,'$product' ,'$code','$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
 }
 
+
 $resultPareto = odbc_exec($conn, $queryPareto);
 
 $codePareto = array();

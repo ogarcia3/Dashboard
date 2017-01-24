@@ -1,20 +1,16 @@
 <?php
-//$user = 'userwapp515'; 
-//$pass = 'userwapp5151';
-//$connection_string = 'DRIVER={SQL Server};SERVER=SQ21DDB\SQ21DDB;DATABASE=Metrics'; 
-//
-//$connection = odbc_connect("DSNwapp515", $user, $pass); 
-//
-//var_dump($connection);
-//
-//if($connection){
-//    echo 'Success';
-//}else {
-//    echo 'error';
-//}
+$user = 'matrix_rw'; 
+$pass = 'ssms2014Matrix';
+$connection_string = 'DRIVER={SQL Native Client 10.0};SERVER=SQ21DDB\SQ21DDB;DATABASE=Metrics'; 
 
-$link = mssql_connect('TIJAPIAP05\AMEXSQL','wapp515', 'userwapp515', 'userwapp5151');
+$connection = odbc_connect("DSNmetrics", $user, $pass); 
 
-if (!$link) {
-    die('Something went wrong while connecting to MSSQL');
+var_dump($connection);
+
+if($connection){
+    echo 'Success';
+}else {
+    echo 'error';
 }
+
+

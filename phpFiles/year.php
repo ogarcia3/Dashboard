@@ -89,7 +89,6 @@ $resultConvert = odbc_exec($conn, $queryConvert);
 while($rowConvert = odbc_fetch_array($resultConvert)){
     $period1 = $rowConvert['minPeriod'];
     $period2 = $rowConvert['maxPeriod'];
-    $fy = $rowConvert['fiscal_year'];
 }
 
 $queryNames = "EXEC [sp_get_names] $area,$wc,$brand,$product,$code,$rdc,$shift";

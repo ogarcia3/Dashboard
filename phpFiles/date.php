@@ -91,7 +91,6 @@ $resultConvert = odbc_exec($conn, $queryConvert);
 while ($rowConvert = odbc_fetch_array($resultConvert)){
     $period1 = $rowConvert['minPeriod'];
     $period2 = $rowConvert['maxPeriod'];
-    $fy = $rowConvert['fiscal_year'];
 }
 
 odbc_free_result($resultConvert);

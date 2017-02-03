@@ -205,6 +205,6 @@ $(function () {
 $('.iframe-link').magnificPopup({
     type: 'iframe',
     iframe: {
-        markup: '<iframe width="853" height="480" src="http://amexccp.steelcase.net/AmexDashboard/" frameborder="0" allowfullscreen></iframe>'
+        markup: '<iframe width="853" height="480" src="http://amexccp.steelcase.net/Charts/test/Amex/index.php" frameborder="0" allowfullscreen></iframe>'
     }   
  });

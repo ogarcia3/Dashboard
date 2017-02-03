@@ -1,10 +1,9 @@
 $(document).ready(function (){
-    $("#noti").attr('checked',true);
-    $("#year").attr('checked',true);
-    display();
+    display(4);
     today();
     getProduct(0);
     getWc(0);
+
 });
 
 function today(){
@@ -12,16 +11,16 @@ function today(){
     var day = ("0" + now.getDate()).slice(-2);
     var month = ("0" + (now.getMonth() + 1)).slice(-2);
     var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
-    $('#dateInput1').val(today);
-    $('#dateInput2').val(today);
+    $('#startDate').val(today);
+    $('#endDate').val(today);
 }
 
 function validateDate(){
-    var dateStart = $("#dateInput1").val();
-    var dateEnd = $("#dateInput2").val();
+    var dateStart = $("#startDate").val();
+    var dateEnd = $("#endDate").val();
     
     if (dateEnd < dateStart || dateStart > dateEnd){
-        alert('Range of date not valid');
+        alert("Range of date not valid");
         today();
     }
 }
@@ -33,11 +32,11 @@ function validateWeek(){
     var yearEnd = $("#yearEnd").val();
     
     if(parseInt(weekStart,10) > parseInt(weekEnd,10)){
-        alert('not valid range');
+        alert("not valid range");
         $(".week").each(function() { this.selectedIndex = 0; });
     }        
     if(validateYear(yearStart,yearEnd)){
-        alert('year range not validate');
+        alert("year range not validate");
         $(".week").each(function() { this.selectedIndex = 0; });
     }
 }
@@ -49,11 +48,11 @@ function validatePeriod(){
     var yearEnd = $("#pYearEnd").val();
     
     if( parseInt(periodStart,10) > parseInt(periodEnd,10)){
-        alert('not valid range');
+        alert("not valid range");
         $(".period").each(function() { this.selectedIndex = 0; });
     }
     if(validateYear(yearStart,yearEnd)){
-        alert('year range not validate');
+        alert("year range not validate");
         $(".period").each(function() { this.selectedIndex = 0; });
     }
 }
@@ -69,7 +68,7 @@ function sendYear(){
     var yearEnd = $("#year2").val();
     
     if(validateYear(yearStart,yearEnd)){
-        alert('year range not validate');
+        alert("year range not validate");
         $(".year").each(function() { this.selectedIndex = 0; });
     }
 }
@@ -79,7 +78,7 @@ function getProduct(id){
         type: "post",
         url: "functions.php",
         data: {'id': id}, 
-        success: function(data) { $('#products').html(data); }
+        success: function(data) { $("#product").html(data); }
     });
 };
 
@@ -88,51 +87,69 @@ function getWc(id_area){
         type: "post",
         url: "functions.php",
         data: {'id_area': id_area}, 
-        success: function(data) { $('#wc').html(data); }
+        success: function(data) { 
+            $("#wc").html(data); 
+            $('.selectpicker').selectpicker('refresh');
+        }
     });
 };
 
-function display(){
-    if ($("#day").is(':checked')){
-        $("#datepicker").css({display : "block"});
+
+$("#buttons :input").change(function() {
+    display($(this).val());
+});
+
+function display(num){
+    if (num == 1){
+        $("input", "#dateRange").each(function(){
+            $(this).removeAttr("disabled");
+        }); 
+        $("#dateRange").show();
     }
     else{
-        $("#datepicker").css({display : "none"});
+        $("input", "#dateRange").each(function(){
+            $(this).attr("disabled", "disabled");
+        });
+        $("#dateRange").hide();
     }
       
-     if($("#week").is(':checked')){
-        $("#semana").css({display: "block"});
+     if(num == 2){ 
+        $("select", "#weekRange").each(function(){
+            $(this).removeAttr("disabled");
+        }); 
+        $("#weekRange").show();
      }
      else{
-         $("#semana").css({display: "none"});
+         $("select", "#weekRange").each(function(){
+            $(this).attr("disabled", "disabled");
+        });
+        $("#weekRange").hide();
      }
 
-     if($("#period").is(':checked')){
-         $("#periodo").css({display: "block"});
+     if(num == 3){
+        $("select", "#periodRange").each(function(){
+            $(this).removeAttr("disabled");
+        }); 
+        $("#periodRange").show();
      }
      else{
-         $("#periodo").css({display: "none"});
+         $("select", "#periodRange").each(function(){
+            $(this).attr("disabled", "disabled");
+        });
+        $("#periodRange").hide();
      }
 
-     if($("#year").is(':checked')){
-        $("#año").css({display: "block"});
+     if(num == 4){
+        $("select", "#yearRange").each(function(){
+            $(this).removeAttr("disabled");
+        }); 
+        $("#yearRange").show();
      }
      else{
-         $("#año").css({display: "none"});
+         $("select", "#yearRange").each(function(){
+            $(this).attr("disabled", "disabled");
+        });
+        $("#yearRange").hide();
      }
  }
 
-function page_select(){
-    if($("#day").is(':checked')){
-        $("#indexForm").prop("action","phpFiles/date.php");
-    }
-    else if($("#week").is(':checked')){
-        $("#indexForm").prop("action","phpFiles/week.php");
-    }
-    else if($("#period").is(':checked')){
-        $("#indexForm").prop("action","phpFiles/period.php");
-    }
-    else if($("#year").is(':checked')){
-        $("#indexForm").prop("action","phpFiles/year.php");
-    }
-}

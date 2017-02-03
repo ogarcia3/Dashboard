@@ -4,26 +4,64 @@ include 'databaseConn.php';
 
 include 'variables.php';
 
-if(isset($_POST['dateradio'])){
-    $opt = ($_POST['dateradio']);
+print_r($_POST);
+
+if(isset($_POST['date'])){
+    $opt = ($_POST['date']);
 }
 
-if(isset($_POST['period1'])){
-    $period1 = ($_POST['period1']);
+if(isset($_POST['startPeriod']) && isset($_POST['endPeriod']) && isset($_POST['startPeriodYear']) && isset($_POST['endPeriodYear'])){
+    $period1 = ($_POST['startPeriod']);
+    $period2 = ($_POST['endPeriod']);
+    $periodYear1 = ($_POST['startPeriodYear']);
+    $periodYear2 = ($_POST['endPeriodYear']);
+    
+    $queryConvert = "EXEC [sp_period_to_date]  '$period1','$periodYear1','$period2','$periodYear2';";
+
+    $resultConvert = odbc_exec($conn, $queryConvert);
+
+    while($rowConvert = odbc_fetch_array($resultConvert)){
+        $date1 = $rowConvert['minDate'];
+        $date2 = $rowConvert['maxDate'];
+    }
 }
 
-if(isset($_POST['period2'])){
-    $period2 = ($_POST['period2']);
+if(isset($_POST['startWeek']) && isset($_POST['endWeek']) && isset($_POST['startWeekYear']) && isset($_POST['endWeekYear'])){
+    $week1 = ($_POST['startWeek']);
+    $week2 = ($_POST['endWeek']);
+    $weekYear1 = ($_POST['startWeekYear']);
+    $weekYear2 = ($_POST['endWeekYear']);
+    
+    $queryConvert = "EXEC [sp_week_to_date]  '$week1','$weekYear1','$week2','$weekYear2';";
+    $resultConvert = odbc_exec($conn, $queryConvert);
+
+    while($rowConvert = odbc_fetch_array($resultConvert)){
+        $date1 = $rowConvert['minDate'];
+        $date2 = $rowConvert['maxDate'];
+    }
 }
 
-if(isset($_POST['pyear1'])){
-    $year1 = ($_POST['pyear1']);
+if(isset($_POST['startYear']) && isset($_POST['endYear'])){
+    
+    $year1 = ($_POST['startYear']);
+    $year2 = ($_POST['endYear']);
+    
+    $queryConvert = "EXEC [sp_year_to_date] '$year1','$year2';";
+
+    $resultConvert = odbc_exec($conn, $queryConvert);
+
+    while($rowConvert = odbc_fetch_array($resultConvert)){
+        $date1 = $rowConvert['minDate'];
+        $date2 = $rowConvert['maxDate'];
+    }
 }
 
-if(isset($_POST['pyear2'])){
-    $year2 = ($_POST['pyear2']);
+if(isset($_POST['startDate']) && isset($_POST['endDate'])){
+    
+    $date1 = ($_POST['startDate']);
+    $date2 = ($_POST['endDate']);
 }
-                
+
 if(isset($_POST['brand'])){
     $brand = ($_POST['brand']);
 }
@@ -41,7 +79,7 @@ if(isset($_POST['area'])){
 }
 
 if(isset($_POST['wc'])){
-    $wc = ($_POST['wc']);
+    $wc = implode(",", $_POST['wc']);
 }
 
 if(isset($_POST['shift'])){
@@ -56,8 +94,7 @@ if(isset($_POST['order'])){
     $order = ($_POST['order']);
 }
 
-$query = "EXEC [sp_dashboard_period] '$opt','$period1','$period2','$year1','$year2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
-
+$query = "EXEC [sp_dashboard_date] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
 $result = odbc_exec($conn, $query);
 
 $period = array();
@@ -72,10 +109,11 @@ while ($row = odbc_fetch_array($result)){
 
 odbc_free_result($result);
 
+
 if($code == 0){
-    $queryPareto = "EXEC [sp_dashboard_period_pareto] '$opt','$period1','$period2','$year1','$year2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
+    $queryPareto = "EXEC [sp_dashboard_date_pareto] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
 }else{
-    $queryPareto = "EXEC [sp_dashboard_period_pareto_func_own] '$opt','$period1','$period2','$year1','$year2','$brand' ,'$product' ,'$code', '$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
+    $queryPareto = "EXEC [sp_dashboard_date_pareto_func_own] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
 }
 
 $resultPareto = odbc_exec($conn, $queryPareto);
@@ -92,8 +130,19 @@ while ($row = odbc_fetch_array($resultPareto)){
 
 odbc_free_result($resultPareto);
 
-$queryNames = "EXEC [sp_get_names] $area,$wc,$brand,$product,$code,$rdc,$shift";
+$queryConvert = "EXEC [sp_convert_date_to_period]'$date1','$date2';";
 
+$resultConvert = odbc_exec($conn, $queryConvert);
+
+while ($rowConvert = odbc_fetch_array($resultConvert)){
+    $period1 = $rowConvert['minPeriod'];
+    $period2 = $rowConvert['maxPeriod'];
+}
+
+odbc_free_result($resultConvert);
+
+$queryNames = "EXEC [sp_get_names_test] '$area','$wc','$brand','$product','$code','$rdc','$shift'";
+echo $queryNames;
 $resultNames = odbc_exec($conn, $queryNames);
 
 while ($rowName = odbc_fetch_array($resultNames)){
@@ -102,11 +151,11 @@ while ($rowName = odbc_fetch_array($resultNames)){
     $categoryText = $rowName['category'];
     $productText = $rowName['product'];
     $funcText = $rowName['func'];
-    $rdcText =$rowName['rdc'];
+    $rdcText = $rowName['rdc'];
     $shiftText = $rowName['shift'];
-   }
-   
-   odbc_free_result($resultNames);
+}
+
+odbc_close($conn);
 
 if($order == 0){
     $orderText =  'ALL';
@@ -118,8 +167,8 @@ elseif ($order == 2) {
     $orderText =  'MOCKUP';
 }
 
-$queryYtd = "EXEC [sp_dashboard_period_ytd] '$opt','$period1','$period2','$year1','$year2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
-
+$queryYtd = "EXEC [sp_dashboard_date_ytd] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
+echo $queryYtd;
 $resultYtd = odbc_exec($conn, $queryYtd);
 
 
@@ -127,10 +176,10 @@ while ($row = odbc_fetch_array($resultYtd)){
     $defects=$row['defects'];
     $shipped=$row['shipped'];
     $ytd = $row['Value'];
+    $sigma = round($row['Sigma'],2);
 }
 
 odbc_free_result($resultYtd);
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -196,7 +245,7 @@ odbc_free_result($resultYtd);
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-3 col-md-6">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <div class="row">
@@ -211,7 +260,7 @@ odbc_free_result($resultYtd);
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-3 col-md-6">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <div class="row">
@@ -226,7 +275,7 @@ odbc_free_result($resultYtd);
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-3 col-md-6">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <div class="row">
@@ -236,6 +285,21 @@ odbc_free_result($resultYtd);
                                 <div class="col-xs-9 text-right">
                                     <h1><?php echo $ytd; ?> </h1>
                                     <h4>DPPMS FYTD</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="material-icons" style="font-size:6em;">σ</i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <h1><?php echo $sigma; ?> </h1>
+                                    <h4>SIGMA LEVEL</h4>
                                 </div>
                             </div>
                         </div>
@@ -270,9 +334,9 @@ odbc_free_result($resultYtd);
                         </tfoot>
                         <tbody>
                             <?php
-                            $queryProducts = "EXEC [sp_dashboard_period_pareto_product] '$opt','$period1','$period2','$year1','$year2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
-                            
-                            $resultProducts = odbc_exec($conn, $queryProducts);
+                            $queryProducts = "EXEC [sp_dashboard_date_pareto_product] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";                            
+                            echo $queryProducts;
+                            $resultProducts = odbc_exec($conn, $queryProducts);  
                             
                             while($row = odbc_fetch_array($resultProducts)){
                                 
@@ -320,8 +384,8 @@ odbc_free_result($resultYtd);
                         <tbody>
                             <?php
                             
-                            $query_noti = "EXEC [sp_noti_period] '$opt','$period1','$period2','$year1' ,'$year2','$product','$code','$brand','$order','$area','$wc','$shift','$rdc';";
-                            
+                            $query_noti = "EXEC [sp_noti_date] '$opt','$date1','$date2','$product','$code','$brand','$order','$area','$wc','$shift','$rdc';";
+                            echo $query_noti;
                             $result_noti = odbc_exec($conn, $query_noti);
 
                             while ($row = odbc_fetch_array($result_noti)){

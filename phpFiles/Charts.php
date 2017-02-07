@@ -4,8 +4,6 @@ include 'databaseConn.php';
 
 include 'variables.php';
 
-print_r($_POST);
-
 if(isset($_POST['date'])){
     $opt = ($_POST['date']);
 }
@@ -142,7 +140,7 @@ while ($rowConvert = odbc_fetch_array($resultConvert)){
 odbc_free_result($resultConvert);
 
 $queryNames = "EXEC [sp_get_names_test] '$area','$wc','$brand','$product','$code','$rdc','$shift'";
-echo $queryNames;
+
 $resultNames = odbc_exec($conn, $queryNames);
 
 while ($rowName = odbc_fetch_array($resultNames)){
@@ -168,7 +166,7 @@ elseif ($order == 2) {
 }
 
 $queryYtd = "EXEC [sp_dashboard_date_ytd] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
-echo $queryYtd;
+
 $resultYtd = odbc_exec($conn, $queryYtd);
 
 
@@ -335,7 +333,7 @@ odbc_free_result($resultYtd);
                         <tbody>
                             <?php
                             $queryProducts = "EXEC [sp_dashboard_date_pareto_product] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";                            
-                            echo $queryProducts;
+
                             $resultProducts = odbc_exec($conn, $queryProducts);  
                             
                             while($row = odbc_fetch_array($resultProducts)){
@@ -385,7 +383,7 @@ odbc_free_result($resultYtd);
                             <?php
                             
                             $query_noti = "EXEC [sp_noti_date] '$opt','$date1','$date2','$product','$code','$brand','$order','$area','$wc','$shift','$rdc';";
-                            echo $query_noti;
+
                             $result_noti = odbc_exec($conn, $query_noti);
 
                             while ($row = odbc_fetch_array($result_noti)){

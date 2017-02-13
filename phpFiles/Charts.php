@@ -1,7 +1,9 @@
 <?php
+header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+header("Pragma: no-cache"); // HTTP 1.0.
+header("Expires: 0"); // Proxies.
 
 include 'databaseConn.php';
-
 include 'variables.php';
 
 if(isset($_POST['date'])){
@@ -68,8 +70,8 @@ if(isset($_POST['product'])){
     $product = ($_POST['product']);
 }
 
-if(isset($_POST['code'])){
-    $code = ($_POST['code']);
+if(isset($_POST['product'])){
+    $functionalOwner = ($_POST['product']);
 }
 
 if(isset($_POST['area'])){
@@ -92,7 +94,7 @@ if(isset($_POST['order'])){
     $order = ($_POST['order']);
 }
 
-$query = "EXEC [sp_dashboard_date] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
+$query = "EXEC [sp_dashboard_date] '$opt','$date1','$date2','$brand' ,'$product' ,'$functionalOwner' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
 $result = odbc_exec($conn, $query);
 
 $period = array();
@@ -108,10 +110,10 @@ while ($row = odbc_fetch_array($result)){
 odbc_free_result($result);
 
 
-if($code == 0){
-    $queryPareto = "EXEC [sp_dashboard_date_pareto] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
+if($functionalOwner == 0){
+    $queryPareto = "EXEC [sp_dashboard_date_pareto] '$opt','$date1','$date2','$brand' ,'$product' ,'$functionalOwner' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
 }else{
-    $queryPareto = "EXEC [sp_dashboard_date_pareto_func_own] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
+    $queryPareto = "EXEC [sp_dashboard_date_pareto_func_own] '$opt','$date1','$date2','$brand' ,'$product' ,'$functionalOwner' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
 }
 
 $resultPareto = odbc_exec($conn, $queryPareto);
@@ -139,7 +141,7 @@ while ($rowConvert = odbc_fetch_array($resultConvert)){
 
 odbc_free_result($resultConvert);
 
-$queryNames = "EXEC [sp_get_names_test] '$area','$wc','$brand','$product','$code','$rdc','$shift'";
+$queryNames = "EXEC [sp_get_names_test] '$area','$wc','$brand','$product','$functionalOwner','$rdc','$shift'";
 
 $resultNames = odbc_exec($conn, $queryNames);
 
@@ -165,8 +167,7 @@ elseif ($order == 2) {
     $orderText =  'MOCKUP';
 }
 
-$queryYtd = "EXEC [sp_dashboard_date_ytd] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
-
+$queryYtd = "EXEC [sp_dashboard_date_ytd] '$opt','$date1','$date2','$brand' ,'$product' ,'$functionalOwner','$area' ,'$wc' ,'$shift' ,'$rdc','$order';";
 $resultYtd = odbc_exec($conn, $queryYtd);
 
 
@@ -332,7 +333,7 @@ odbc_free_result($resultYtd);
                         </tfoot>
                         <tbody>
                             <?php
-                            $queryProducts = "EXEC [sp_dashboard_date_pareto_product] '$opt','$date1','$date2','$brand' ,'$product' ,'$code' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";                            
+                            $queryProducts = "EXEC [sp_dashboard_date_pareto_product] '$opt','$date1','$date2','$brand' ,'$product' ,'$functionalOwner' ,'$cause' ,'$area' ,'$wc' ,'$shift' ,'$rdc','$order';";                            
 
                             $resultProducts = odbc_exec($conn, $queryProducts);  
                             
@@ -382,7 +383,7 @@ odbc_free_result($resultYtd);
                         <tbody>
                             <?php
                             
-                            $query_noti = "EXEC [sp_noti_date] '$opt','$date1','$date2','$product','$code','$brand','$order','$area','$wc','$shift','$rdc';";
+                            $query_noti = "EXEC [sp_noti_date] '$opt','$date1','$date2','$product','$functionalOwner','$brand','$order','$area','$wc','$shift','$rdc';";
 
                             $result_noti = odbc_exec($conn, $query_noti);
 

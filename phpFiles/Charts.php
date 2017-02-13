@@ -70,8 +70,8 @@ if(isset($_POST['product'])){
     $product = ($_POST['product']);
 }
 
-if(isset($_POST['product'])){
-    $functionalOwner = ($_POST['product']);
+if(isset($_POST['functionalOwner'])){
+    $functionalOwner = ($_POST['functionalOwner']);
 }
 
 if(isset($_POST['area'])){
